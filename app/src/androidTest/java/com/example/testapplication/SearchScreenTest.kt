@@ -136,10 +136,24 @@ class SearchScreenTest {
     @Test fun searchScreen_scrollCheckRecyclerView_canScrollToTopAgain() {
         runBlocking {
             waitForFirstLoad()
-
-            scrollingToMaxCount()
-            assertThat(activity?.searchViewModel?.maxCount!!, `is`(activity?.adapter?.itemCount!!))
-
+            onView(withId(R.id.listRv)).perform(ScrollToBottomAction())
+            checkLoading()
+            onView(withId(R.id.listRv)).perform(ScrollToBottomAction())
+            checkLoading()
+            onView(withId(R.id.listRv)).perform(ScrollToBottomAction())
+            checkLoading()
+            onView(withId(R.id.listRv)).perform(ScrollToBottomAction())
+            checkLoading()
+            onView(withId(R.id.listRv)).perform(ScrollToBottomAction())
+            checkLoading()
+            onView(withId(R.id.listRv)).perform(ScrollToBottomAction())
+            checkLoading()
+            onView(withId(R.id.listRv)).perform(ScrollToBottomAction())
+            checkLoading()
+            onView(withId(R.id.listRv)).perform(ScrollToBottomAction())
+            checkLoading()
+            onView(withId(R.id.listRv)).perform(ScrollToBottomAction())
+            checkLoading()
             onView(withId(R.id.listRv)).perform(
                 // scrollTo will fail the test if no item matches.
                 RecyclerViewActions.actionOnItemAtPosition<PeopleViewHolder>(

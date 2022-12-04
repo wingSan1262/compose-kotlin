@@ -10,10 +10,6 @@ import com.example.testapplication.domain.usecases.SearchPeopleUseCase
 import com.example.testapplication.domain.usecases.UpdateOfflinePeopleListUseCase
 import com.example.testapplication.feature.SearchViewModel
 
-/**
- * standard ViewModel factory
- * TODO remove this to dagger ViewModel bindkey feature
- */
 class VmFactory(
     val mApplication: Application,
     val fetchPeopleUseCase: FetchPeopleUseCase,

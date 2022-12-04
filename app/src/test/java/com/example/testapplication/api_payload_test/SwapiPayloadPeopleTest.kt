@@ -1,13 +1,17 @@
 package com.example.testapplication.api_payload_test
 
 
+import android.R
+import android.content.res.Resources
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
+import androidx.viewbinding.ViewBinding
 import com.example.testapplication.data.remote_repository.SwapiApiImpl
 import com.example.testapplication.data.remote_repository.SwapiApiInterface
 import io.mockk.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.test.*
 import okhttp3.OkHttpClient
+import okhttp3.logging.HttpLoggingInterceptor
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import org.junit.After
@@ -18,15 +22,17 @@ import org.junit.runner.RunWith
 import org.mockito.junit.MockitoJUnitRunner
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import retrofit2.create
 import java.util.concurrent.TimeUnit
 
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.CoreMatchers.`is`
 import org.mockito.Mock
-import com.example.testapplication.data.local_db.PeopleItemDao
-import com.example.testapplication.data.remote_repository.SwapiRetrofitInterface
-import com.example.testapplication.domain.models.request.QueryPeopleRequest
-import com.example.testapplication.domain.models.request.SearchPeopleRequest
+import vanrrtech.app.ajaib_app_sample.data.SQDb.github.LocalDb
+import vanrrtech.app.ajaib_app_sample.data.SQDb.github.PeopleItemDao
+import vanrrtech.app.ajaib_app_sample.data.remote_repository.SwapiRetrofitInterface
+import vanrrtech.app.ajaib_app_sample.domain.data_model.github.request.QueryPeopleRequest
+import vanrrtech.app.ajaib_app_sample.domain.data_model.github.request.SearchPeopleRequest
 
 
 @RunWith(MockitoJUnitRunner::class)

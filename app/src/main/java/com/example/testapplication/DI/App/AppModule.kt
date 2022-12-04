@@ -15,9 +15,9 @@ import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import com.example.testapplication.data.local_db.LocalDb
-import com.example.testapplication.data.local_db.PeopleItemDao
-import com.example.testapplication.data.remote_repository.RemoteApiRetrofitClient
+import vanrrtech.app.ajaib_app_sample.data.SQDb.github.LocalDb
+import vanrrtech.app.ajaib_app_sample.data.SQDb.github.PeopleItemDao
+import vanrrtech.app.ajaib_app_sample.data.remote_repository.RemoteApiRetrofitClient
 
 @Module
 class AppModule(val application: Application) {

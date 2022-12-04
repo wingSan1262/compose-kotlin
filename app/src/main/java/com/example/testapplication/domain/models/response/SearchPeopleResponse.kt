@@ -1,4 +1,4 @@
-package com.example.testapplication.domain.models.response
+package vanrrtech.app.ajaib_app_sample.domain.data_model.github.response
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
@@ -6,10 +6,6 @@ import com.example.testapplication.base_component.base_interface.BaseModel
 import com.google.gson.annotations.SerializedName
 import java.io.Serializable
 
-/**
- * Basic request model for api call
- * if needed please add new parser on your local feature module
- */
 
 data class SearchPeopleResponse(
     @SerializedName("count")

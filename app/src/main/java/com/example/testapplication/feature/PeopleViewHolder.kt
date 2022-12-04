@@ -1,19 +1,12 @@
 package com.example.testapplication.feature
 
 import android.view.View
+import com.example.testapplication.R
 import com.example.testapplication.base_component.base_classes.BaseViewHolder
 import com.example.testapplication.base_component.base_interface.BaseModel
 import com.example.testapplication.databinding.ListItemPeopleBinding
-import com.example.testapplication.feature.model.PeopleItemModel
+import vanrrtech.app.ajaib_app_sample.domain.data_model.github.response.PeopleItemModel
 
-/**
- * ViewHolder extends baseViewHolder and BaseModel
- * @see BaseViewHolder
- * @See BaseModel
- *
- * merit : you can easily create dynamic recycleview :)
- *
- */
 class PeopleViewHolder(
     val vhBinding : ListItemPeopleBinding,
     val root : View = vhBinding.root
@@ -32,4 +25,5 @@ class PeopleViewHolder(
             }
         }
     }
+
 }

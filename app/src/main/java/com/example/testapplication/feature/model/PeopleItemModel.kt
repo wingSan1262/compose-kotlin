@@ -1,16 +1,9 @@
-package com.example.testapplication.feature.model
+package vanrrtech.app.ajaib_app_sample.domain.data_model.github.response
 
 import com.example.testapplication.base_component.base_interface.BaseModel
-import com.example.testapplication.domain.models.response.PeopleItemResponse
-import com.example.testapplication.domain.models.response.SearchPeopleResponse
+import com.google.gson.annotations.SerializedName
 import java.io.Serializable
 
-/**
- * relevant local feature data parser
- * in order for the data to be specifically relevant to feature
- * new parser for feture relevant data was added here
- * may be in feature you'll need to use dynamic feature modular
- */
 data class PeopleListModel(
     var count : Int = 0,
     var results : List<PeopleItemModel>? = emptyList(),
@@ -20,6 +13,7 @@ data class PeopleListModel(
         this.results = resp.results?.map {
             it.run {
                 PeopleItemModel(
+                    id,
                     name,
                     height, mass, hairColor, skinColor,
                     eyeColor, birthYear, gender
@@ -30,6 +24,7 @@ data class PeopleListModel(
 }
 
 data class PeopleItemModel(
+    var id : Int = 0,
     var name : String = "",
     var height : String = "0",
     var mass : String = "0",
@@ -41,6 +36,7 @@ data class PeopleItemModel(
 ) : Serializable, BaseModel {
     constructor(resp : PeopleItemResponse) : this() {
         resp.let {
+            id = it.id
             name = it.name
             height = it.height
             mass = it.mass

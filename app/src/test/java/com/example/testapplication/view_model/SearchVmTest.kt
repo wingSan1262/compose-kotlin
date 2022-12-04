@@ -1,6 +1,7 @@
 package com.example.testapplication.view_model
 
 
+import android.view.View
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.example.testapplication.base_component.entities.ResourceState
 import com.example.testapplication.data.remote_repository.SwapiApiInterface
@@ -21,11 +22,10 @@ import org.mockito.junit.MockitoJUnitRunner
 
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.CoreMatchers.`is`
+import org.junit.After
 import org.junit.Rule
-import com.example.testapplication.domain.models.request.SearchPeopleRequest
-import com.example.testapplication.domain.models.response.PeopleItemResponse
-import com.example.testapplication.domain.models.response.SearchPeopleResponse
-import com.example.testapplication.feature.model.PeopleListModel
+import vanrrtech.app.ajaib_app_sample.domain.data_model.github.request.SearchPeopleRequest
+import vanrrtech.app.ajaib_app_sample.domain.data_model.github.response.*
 
 @RunWith(MockitoJUnitRunner::class)
 

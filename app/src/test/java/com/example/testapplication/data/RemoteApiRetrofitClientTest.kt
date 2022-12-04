@@ -1,28 +1,41 @@
 package com.example.testapplication.data
 
+import android.view.View
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.example.testapplication.data.remote_repository.SwapiApiImpl
 import com.example.testapplication.data.remote_repository.SwapiApiInterface
 import io.mockk.*
+import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.CoreMatchers.`is`
+import io.mockk.impl.annotations.SpyK
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.*
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.mockito.Mock
+import org.mockito.Mockito
 import org.mockito.junit.MockitoJUnitRunner
 
+import org.hamcrest.MatcherAssert.assertThat
+import org.hamcrest.CoreMatchers.`is`
 import org.junit.After
 import org.junit.Rule
-import com.example.testapplication.data.local_db.PeopleItemDao
-import com.example.testapplication.data.remote_repository.SwapiRetrofitInterface
-import com.example.testapplication.domain.models.request.QueryPeopleRequest
-import com.example.testapplication.domain.models.request.SearchPeopleRequest
-import com.example.testapplication.domain.models.response.PeopleItemResponse
-import com.example.testapplication.domain.models.response.SearchPeopleResponse
+import org.junit.rules.TestRule
+import org.mockito.Mockito.*
+import org.mockito.stubbing.Answer
+import retrofit2.Retrofit
+import vanrrtech.app.ajaib_app_sample.data.SQDb.github.PeopleItemDao
+import vanrrtech.app.ajaib_app_sample.data.remote_repository.RemoteApiRetrofitClient
+import vanrrtech.app.ajaib_app_sample.data.remote_repository.SwapiRetrofitInterface
+import vanrrtech.app.ajaib_app_sample.domain.data_model.github.request.QueryPeopleRequest
+import vanrrtech.app.ajaib_app_sample.domain.data_model.github.request.SearchPeopleRequest
+import vanrrtech.app.ajaib_app_sample.domain.data_model.github.response.*
 
 @RunWith(MockitoJUnitRunner::class)
 internal class RemoteApiRetrofitClientTest{

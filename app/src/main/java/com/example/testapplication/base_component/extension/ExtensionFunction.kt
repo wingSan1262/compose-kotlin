@@ -14,11 +14,10 @@ import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.launch
+import vanrrtech.app.ajaib_app_sample.domain.data_model.github.request.SearchPeopleRequest
 
-/**
-* Extension method to help on observing the event object
- * to reduce unwanted boiler on view file end
-*/
+
 fun <K> AppCompatActivity.observeEvent(
     data: LiveData<Event<K>>,
     callback : (K) -> Unit
@@ -30,9 +29,6 @@ fun <K> AppCompatActivity.observeEvent(
     }
 }
 
-/**
- * converting edit text changed into Coroutine Flow Streams
- */
 fun EditText.textChanges(): Flow<CharSequence?> {
     return callbackFlow<CharSequence?> {
         val listener = object : TextWatcher {
@@ -41,17 +37,14 @@ fun EditText.textChanges(): Flow<CharSequence?> {
                 Unit
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                offer(s) //TODO: Replace offer with trySend when we update kotlin coroutine version
+                trySend(s).isSuccess //TODO: Replace offer with trySend when we update kotlin coroutine version
             }
         }
         addTextChangedListener(listener)
         awaitClose { removeTextChangedListener(listener) }
-    }.onStart { emit(text) }
+    }.onStart{ emit(text) }
 }
-/**
- * Extension method to add a bottom listener of recycler view
- * to reduce unwanted boiler on view file end
- */
+
 fun RecyclerView.addOnBottomScrollListener(onBottomReached : ()->Unit = {}){
     addOnScrollListener(object : RecyclerView.OnScrollListener() {
         override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
@@ -70,16 +63,10 @@ fun RecyclerView.addOnBottomScrollListener(onBottomReached : ()->Unit = {}){
     })
 }
 
-/**
- * Extension method to show snack bar in activity scope
- */
 fun AppCompatActivity.showSnackBar(view : View, msg : String){
     Snackbar.make(view, msg, Snackbar.LENGTH_LONG).show()
 }
 
-/**
- * helper for hiding UI component programatically
- */
 fun View.setVisibility(boolean: Boolean){
     this.visibility = if(boolean) View.VISIBLE else View.GONE
 }

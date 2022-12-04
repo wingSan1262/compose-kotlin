@@ -1,160 +1,140 @@
 package com.example.testapplication.feature
 
 import android.os.Bundle
-import androidx.lifecycle.lifecycleScope
-import androidx.recyclerview.widget.LinearLayoutManager
+import android.widget.Toast
+import androidx.activity.compose.setContent
+import androidx.compose.material.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.ui.ExperimentalComposeUiApi
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
+import com.example.testapplication.MyApplication.compose_themes.TestApplicationTheme
 import com.example.testapplication.base_component.base_classes.BaseActivity
 import com.example.testapplication.base_component.entities.ResourceState
-import com.example.testapplication.base_component.extension.*
-import com.example.testapplication.databinding.ActivityMainBinding
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.debounce
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.launch
-import com.example.testapplication.domain.models.request.SearchPeopleRequest
-import com.example.testapplication.feature.model.PeopleListModel
+import com.example.testapplication.feature.compose_views.CustomSearchBarView
+import com.example.testapplication.feature.compose_views.PeopleListWidget
+import com.example.testapplication.feature.compose_views.SearchBar
+import vanrrtech.app.ajaib_app_sample.domain.data_model.github.response.PeopleItemModel
+import vanrrtech.app.ajaib_app_sample.domain.data_model.github.response.PeopleListModel
 import javax.inject.Inject
 
-class MainActivity : BaseActivity<ActivityMainBinding>() {
+@ExperimentalMaterialApi
+@ExperimentalComposeUiApi
+class MainActivity : BaseActivity() {
 
     @Inject
-    lateinit var searchViewModel: SearchViewModel
-    var adapter = SearchListAdapter()
+    lateinit var listViewModel: SearchViewModel
+
+    private lateinit var navController : NavHostController
 
     override fun onCreate(savedInstanceState: Bundle?) {
+
         activityComponent.inject(this)
-        bindThisView(this, layoutInflater, null)
+
         super.onCreate(savedInstanceState)
-        initUi()
-        observeDatas()
-    }
 
-    override fun onDestroy() {
-        searchViewModel.onDestroy()
-        super.onDestroy()
-    }
+        observeNonComposeData()
 
-    fun initUi(){
-        withBinding{
-            listRv.let {
-                it.layoutManager = LinearLayoutManager(this@MainActivity,
-                    LinearLayoutManager.VERTICAL,
-                    false)
-                it.isNestedScrollingEnabled = false
-                it.adapter = adapter
-            }
-            listRv.addOnBottomScrollListener {
-                if(!searchViewModel.isQuerying){
-                    if(searchViewModel.maxCount > adapter.listItems.size){
-                        showLoading()
-                        searchViewModel.currentPage = searchViewModel.currentPage + 1
-                        searchViewModel.searchPeopleData(
-                            SearchPeopleRequest(
-                                searchViewModel.currentQuerySearch,
-                                searchViewModel.currentPage
-                            )
-                        ) } }
-            }
-            searchField.textChanges()?.debounce(400)?.onEach { s ->
-                searchViewModel.currentPage = 1
-                if (s.isNullOrBlank()) { // user clear search field
-                    if(searchViewModel.currentQuerySearch.isEmpty()){
-                        searchViewModel.searchPeopleData(
-                            SearchPeopleRequest(
-                                searchViewModel.currentQuerySearch,
-                                searchViewModel.currentPage
-                            )
-                        ); searchViewModel.currentQuerySearch = ""
-                        return@onEach
+        setContent {
+            navController = rememberNavController()
+            TestApplicationTheme {
+
+                val listState = listViewModel.searchPeopleLiveData.observeAsState()
+                val offlineListState = listViewModel.offlineCachingLiveData.observeAsState()
+
+                Scaffold(
+                    topBar = {
+                        CustomSearchBarView(
+                            onTextChange = { // start fresh searching
+                                listViewModel.searchPeopleData(it) },
+                            onCloseClicked = { // reset searching
+                                listViewModel.currentQuerySearch = ""
+                                listViewModel.searchPeopleData("") } ) },
+
+
+                    content = {
+
+                        listState.value
+                            ?.nonFilteredContent()?.let{ listContent ->
+                                when(listContent){
+                                    is ResourceState.Success -> updateLazyList(listContent.body)
+                                    is ResourceState.Failure -> {
+                                        listViewModel.fetchOfflineCachePeopleList()
+                                        errorToast(listContent.exception.message.toString()) }
+                                }
+                            }
+
+                        offlineListState.value?.nonFilteredContent()?.let { listContent ->
+                            when(listContent){
+                                is ResourceState.Success -> updateLazyList(listContent.body)
+                                is ResourceState.Failure -> errorToast(listContent.exception.message.toString())
+                            }
+                        }
                     }
-                }
-                // user search someting
-                searchViewModel.currentQuerySearch = s.toString()
-                searchViewModel.searchPeopleData(
-                    SearchPeopleRequest(
-                        s.toString(),
-                        searchViewModel.currentPage,
-                    )
                 )
-            }?.launchIn(lifecycleScope)
-        }
-    }
-
-    fun updateList(data: PeopleListModel) {
-        if(data.results?.isEmpty() == true){
-            showSnackBar(viewBinding.root, "no user found here sorry . . .")
-            return
-        }
-        if(searchViewModel.currentPage <= 1)
-            adapter.clearList() // clear if freshly open or start new search
-
-        searchViewModel.maxCount = data.count // max count
-        lifecycleScope.launch {
-            withBinding {
-                showLoading()
-                listRv.setVisibility(true)
             }
-            data.results?.let {
-                // Effect by showing each by each when first open
-                if(searchViewModel.currentQuerySearch.isEmpty() && searchViewModel.isFirstOpen)
-                    it?.asReversed()?.forEach {
-                        adapter?.insertAtTop(it)
-                        delay(50)
-                        withBinding { listRv.smoothScrollToPosition(0) }
-                    } else adapter?.insertAll(it)
-            }
-            searchViewModel.isFirstOpen = false
-            searchViewModel.isQuerying = false
         }
+
+        // initial search
+        if(listViewModel.peopleListHolder.isEmpty())
+            listViewModel.searchPeopleData(
+                listViewModel.currentQuerySearch )
     }
 
-    /**
-     * show loading and automatically dismiss it
-     */
-    fun showLoading(){
-        lifecycleScope.launch {
-            withBinding { cvLoading.setVisibility(true)}
-            delay(2000)
-            withBinding { cvLoading.setVisibility(false)}
-        }
-    }
-
-    fun observeDatas(){
-        observeEvent(searchViewModel.searchPeopleLiveData){
-            when(it){
-                is ResourceState.Success -> {
-                    updateList(it.body)
-                }
-                is ResourceState.Failure -> {
-                    if(searchViewModel.currentPage > 1)
-                        searchViewModel.currentPage = searchViewModel.currentPage -1
-                    if(adapter.listItems.isEmpty()){
-                        searchViewModel.fetchOfflineCachePeopleList()
-                        searchViewModel.currentPage = 1
-                    }
-                    searchViewModel.isQuerying = false
-                    showSnackBar(viewBinding.root, it.exception.message.toString())
+    private fun observeNonComposeData() {
+        listViewModel.updateOfflinePeopleLiveData.observe(this){
+            it.contentIfNotHandled?.let {
+                when(it){
+                    is ResourceState.Failure ->
+                        errorToast(it.exception.message.toString())
                 }
             }
         }
-
-        observeEvent(searchViewModel.offlineCachingLiveData){
-            when(it){
-                is ResourceState.Success -> updateList(it.body)
-                is ResourceState.Failure -> {
-                    searchViewModel.isQuerying = false
-                    showSnackBar(viewBinding.root, "Caching Load Error")
-                }
-            }
-        }
-
-        observeEvent(searchViewModel.updateOfflinePeopleLiveData){
-            when(it){
-                is ResourceState.Success -> { }
-                is ResourceState.Failure -> showSnackBar(viewBinding.root, "Caching Load Error")
-            }
-        }
     }
+
+    fun errorToast(
+        msg : String = "There is something wrong, please check network"
+    ){
+        Toast.makeText(
+            this,
+            msg,
+            Toast.LENGTH_LONG
+        ).show()
+    }
+
+    @Composable
+    fun updateLazyList(listContent : PeopleListModel){
+        listContent.results?.let{
+
+            PeopleListWidget(
+                listPeople = it,
+                fetchNewPage = {
+                    if(!listViewModel.isQuerying)
+                        listViewModel.loadMorePage()
+                } ) }
+
+    }
+
+    @Composable
+    fun initView(
+        listPeople: List<PeopleItemModel> = listOf()
+    ){
+        Scaffold(
+            topBar = {
+                SearchBar()
+            },
+            content = {
+                PeopleListWidget(listPeople)
+            }
+        )
+    }
+
+    @Composable
+    @Preview
+    private fun previewView(){
+        TestApplicationTheme {
+            initView(listOf(PeopleItemModel(id=0), PeopleItemModel(id=1)))
+        }}
 }
-

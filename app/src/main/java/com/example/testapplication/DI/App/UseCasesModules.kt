@@ -7,17 +7,8 @@ import com.example.testapplication.domain.usecases.SearchPeopleUseCase
 import com.example.testapplication.domain.usecases.UpdateOfflinePeopleListUseCase
 import dagger.Module
 import dagger.Provides
+import vanrrtech.app.ajaib_app_sample.data.remote_repository.RemoteApiRetrofitClient
 
-
-/**
- * UseCase Module
- * Which AppScoped
- *
- * i think usecase is better to be available on all app or module
- * if you have better idea please modify
- *
- * @see AppComponent
- */
 @Module
 class UseCasesModules() {
 

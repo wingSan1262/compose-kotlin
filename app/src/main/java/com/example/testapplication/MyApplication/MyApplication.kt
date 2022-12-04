@@ -7,9 +7,6 @@ import com.example.testapplication.DI.App.AppComponent
 import com.example.testapplication.DI.App.AppModule
 import com.example.testapplication.DI.App.DaggerAppComponent
 
-/**
- * Custom Application Object Holder
- */
 class MyApplication : Application() {
     val myAppComponent : AppComponent by lazy {
         DaggerAppComponent.builder().appModule(AppModule(this)).build()

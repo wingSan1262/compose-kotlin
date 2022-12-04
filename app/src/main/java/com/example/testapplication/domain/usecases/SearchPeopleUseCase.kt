@@ -3,15 +3,10 @@ package com.example.testapplication.domain.usecases
 import com.example.testapplication.base_component.base_classes.BaseUseCase
 import com.example.testapplication.data.remote_repository.SwapiApiInterface
 import kotlinx.coroutines.launch
-import com.example.testapplication.domain.models.request.SearchPeopleRequest
-import com.example.testapplication.domain.models.response.SearchPeopleResponse
+import vanrrtech.app.ajaib_app_sample.domain.data_model.github.request.QueryPeopleRequest
+import vanrrtech.app.ajaib_app_sample.domain.data_model.github.request.SearchPeopleRequest
+import vanrrtech.app.ajaib_app_sample.domain.data_model.github.response.SearchPeopleResponse
 
-/**
- * API usecase wrapper
- * please subscribe to this livedata usecase
- *
- * @see BaseUseCase
- */
 class SearchPeopleUseCase(
     val api : SwapiApiInterface
 ) : BaseUseCase<SearchPeopleRequest, SearchPeopleResponse>(){
@@ -20,7 +15,11 @@ class SearchPeopleUseCase(
         super.setup(parameter)
         launch(coroutineContext) {
             execute {
-                return@execute api.searchPeopleList(parameter)
+                var data : SearchPeopleResponse? = null
+                api.searchPeopleList(parameter).let{
+                    data = it
+                    return@execute data
+                }
             }
         }
     }

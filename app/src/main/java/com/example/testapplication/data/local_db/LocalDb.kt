@@ -1,14 +1,11 @@
-package com.example.testapplication.data.local_db
+package vanrrtech.app.ajaib_app_sample.data.SQDb.github
 
 import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
-import com.example.testapplication.domain.models.response.PeopleItemResponse
+import vanrrtech.app.ajaib_app_sample.domain.data_model.github.response.PeopleItemResponse
 
-/**
- * this app database calss
- */
 @Database(entities = [PeopleItemResponse::class], exportSchema = false, version = 1)
 public abstract class LocalDb() : RoomDatabase() {
     companion object {

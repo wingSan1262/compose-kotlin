@@ -1,12 +1,8 @@
-package com.example.testapplication.data.local_db
+package vanrrtech.app.ajaib_app_sample.data.SQDb.github
 
 import androidx.room.*
-import com.example.testapplication.domain.models.response.PeopleItemResponse
+import vanrrtech.app.ajaib_app_sample.domain.data_model.github.response.PeopleItemResponse
 
-/**
- * Data Access Object for accessing people_list_table
- * plase check on Room Database standard usage
- */
 @Dao
 interface PeopleItemDao {
     @Query("Select * from people_list_table")
